@@ -1,53 +1,81 @@
 const axios = require("axios");
-const fs = require("fs");
-const http = require("http");
-
-const csv = require("csv-parser");
+const moment = require("moment");
 
 const confirmedCasesGlobalURL =
   "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv";
 const confirmedDeathsGlobalURL =
   "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv";
 
-async function fetchCSVData(url) {
+async function fetchData(url) {
   try {
-    const rawData = await axios.get(url);
-    return rawData.data;
+    const response = await axios.get(url);
+    return response.data;
   } catch (error) {
     throw new Error(error.message);
   }
 }
 
-function readCSV(csvData) {
-  return new Promise((resolve, reject) => {
-    const results = [];
-    fs.createReadStream(csvData)
-      .pipe(csv())
-      .on("data", data => {
-        results.push(dataFormatter(data));
-      })
-      .on("error", err => reject(err))
-      .on("end", () => resolve(results));
-  });
+function formatCSVData(responseString) {
+  const formattedData = [];
+  const dataToken = responseString.split(/\r?\n/);
+
+  //get the row headers
+  const rows = dataToken[0].split(",");
+
+  //loop through the data, ignoring the first row
+
+  for (let i = 1; i < dataToken.length; i++) {
+    const element = dataToken[i].split(",");
+
+    for (let j = 4; j < element.length; j++) {
+      const data = {
+        province: element[0],
+        country: element[1],
+        latitude: element[2],
+        longitude: element[3],
+        date: moment.utc(rows[j], "MM/DD/YYYY").format(),
+        cases: parseInt(element[j])
+      };
+      formattedData.push(data);
+    }
+  }
+  return formattedData;
 }
 
-const file = fs.createWriteStream("../data/confirmed.csv");
-const fileD = fs.createWriteStream("../data/deaths.csv");
-
-function dataFormatter(data) {
-  return {
-    ProvinceOrState: data["Province/State"],
-    Country: data["Country/Region"],
-    Latitude: data.Lat,
-    Longitude: data.Long
-  };
+async function fetchAndFormatData(url) {
+  const responseString = await fetchData(confirmedDeathsGlobalURL);
+  return formatCSVData(responseString);
 }
 
-fetchCSVData(confirmedCasesGlobalURL).then(data => {
-  console.log(typeof data);
-  console.log(data.slice(0, 100));
-});
+fetchAndFormatData()
+  .then(data => console.log(data.slice(0, 100)))
+  .catch(error => console.log(error));
+// axios
+//   .get(url)
+//   .then(response => {
+//     const individualentries = [];
+//     const alldata = response.data.split(/\r?\n/);
 
-// readCSV(confirmedCasesGlobalURL)
-//   .then(response => response[0])
-//   .catch(error => console.log(error));
+//     //get the rows
+//     const rows = alldata[0].split(",");
+
+//     //loop through the data
+
+//     for (let i = 1; i < alldata.length; i++) {
+//       const element = alldata[i].split(",");
+
+//       for (let m = 4; m < element.length; m++) {
+//         const data = {
+//           [rows[0]]: element[0],
+//           [rows[1]]: element[1],
+//           [rows[2]]: element[2],
+//           [rows[3]]: element[3],
+//           date: moment.utc(rows[m], "MM/DD/YYYY").format(),
+//           number: parseInt(element[m])
+//         };
+//         individualentries.push(data);
+//       }
+//     }
+//     console.log(individualentries.slice(100, 127));
+//   })
+// .catch(error => console.log(error));
