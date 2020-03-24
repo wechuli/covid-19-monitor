@@ -28,15 +28,22 @@ function formatCSVData(responseString) {
     const element = dataToken[i].split(",");
 
     for (let j = 4; j < element.length; j++) {
-      const data = {
-        province: element[0],
-        country: element[1],
-        latitude: element[2],
-        longitude: element[3],
-        date: moment.utc(rows[j], "MM/DD/YYYY").format(),
-        number: parseInt(element[j])
-      };
-      formattedData.push(data);
+      let data;
+
+      let date = moment.utc(rows[j], "MM/DD/YYYY");
+
+      if (date.isValid()) {
+        data = {
+          province: element[0],
+          country: element[1],
+          latitude: element[2],
+          longitude: element[3],
+          date: moment.utc(rows[j], "MM/DD/YYYY").format(),
+          number: parseInt(element[j])
+        };
+
+        formattedData.push(data);
+      }
     }
   }
   return formattedData;
