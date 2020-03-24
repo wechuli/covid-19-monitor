@@ -1,5 +1,4 @@
 const express = require("express"),
-  mongoose = require("mongoose"),
   morgan = require("morgan"),
   cors = require("cors"),
   helmet = require("helmet"),
@@ -9,6 +8,7 @@ const express = require("express"),
 //custom imports
 
 const userRoutes = require("./routes/user.routes");
+const dataRoutes = require("./routes/data.routes");
 
 const app = express();
 
@@ -20,21 +20,12 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-//connect to DB
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useCreateIndex: true,
-    useNewUrlParser: true,
-    useFindAndModify: false
-  })
-  .then(() => {
-    console.info("Database successfully connected");
-  })
-  .catch(error => console.log(error));
-
 //Custom routes
 app.use("/api/users", userRoutes);
 
+app.use("/api/data", dataRoutes);
+
+console.log(process.env.PGDATABASE);
 //404 default route
 
 app.use((req, res) => {
