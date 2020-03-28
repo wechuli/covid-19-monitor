@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Typography, Button, Spin } from "antd";
+import { Typography, Button, Spin, Select } from "antd";
 import Statistics from "./components/statistics/Statistics";
 import Cases from "./components/cases/Cases";
 
 function App() {
   const [data, setData] = useState([]);
   const [countries, setCountries] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState();
+  const { Option } = Select;
 
   const { Title, Text } = Typography;
 
   //fetch starts
   useEffect(() => {
+    handleChange("KE");
     async function fetchData() {
       const response = await axios.get("http://localhost:7493/api/data/stats");
       setData(response.data.data);
@@ -20,18 +23,19 @@ function App() {
   }, []);
 
   //fetch all countries
-
   useEffect(() => {
     async function fetchData() {
       const response = await axios.get(
         "http://localhost:7493/api/data/allcountries"
       );
-      setCountries(response);
+      setCountries(response.data);
     }
     fetchData();
   }, []);
 
-  console.log(data);
+  const handleChange = value => {
+    setSelectedCountry(value);
+  };
   return (
     <>
       <div className="container">
@@ -46,10 +50,33 @@ function App() {
             <Spin size="large" />
           </div>
         ) : (
-          <Statistics data={data} countries={countries} />
+          <div>
+            <Statistics data={data} />
+          </div>
         )}
 
-        <Cases />
+        <Title level={4}>Cases and Deaths Per Country</Title>
+
+        {countries.length === 0 ? (
+          <div className="spiner">
+            <Spin size="large" />
+          </div>
+        ) : (
+          <div>
+            <Select
+              style={{ width: "25%", margin: "20 0" }}
+              onChange={handleChange}
+              tokenSeparators={[","]}
+              defaultValue={["Kenya"]}
+            >
+              {countries.data.map(item => (
+                <Option key={item.country}>{item.name}</Option>
+              ))}
+            </Select>
+
+            <Cases country={selectedCountry} />
+          </div>
+        )}
       </div>
     </>
   );

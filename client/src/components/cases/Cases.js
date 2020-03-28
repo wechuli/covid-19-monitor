@@ -5,10 +5,14 @@ import HighchartsReact from "highcharts-react-official";
 import axios from "axios";
 
 const Cases = props => {
+  const { country } = props;
   const [caseData, setCaseData] = useState({ country: "", series: [] });
   const [deathsData, setDeathsData] = useState({ country: "", series: [] });
 
   const options = {
+    title: {
+      text: `Cases and Deaths from Covid-19 in ${country}`
+    },
     credits: false,
     chart: {
       zoomType: "x"
@@ -21,10 +25,12 @@ const Cases = props => {
     series: [
       {
         name: "cases",
+        type:"area",
         data: caseData.series
       },
       {
         name: "deaths",
+        type:"area",
         data: deathsData.series
       }
     ],
@@ -49,7 +55,7 @@ const Cases = props => {
   useEffect(() => {
     async function fetchData() {
       const response = await axios.get(
-        "http://localhost:7493/api/data/cases/IT"
+        `http://localhost:7493/api/data/cases/${country}`
       );
       console.log("i was here");
       let caseSeries = [];
@@ -69,7 +75,7 @@ const Cases = props => {
       setDeathsData({ country: "Italy", series: deathSeries });
     }
     fetchData();
-  }, []);
+  }, [country]);
 
   return (
     <div>
@@ -78,10 +84,6 @@ const Cases = props => {
         constructorType={"stockChart"}
         options={options}
       />
-
-      {/*       highcharts={Highcharts}
-    constructorType={"stockChart"}
-    options={options} */}
     </div>
   );
 };

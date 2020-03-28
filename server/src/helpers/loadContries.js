@@ -1,7 +1,6 @@
 const fs = require("fs");
 const csv = require("csv-parser");
 const moment = require("moment");
-const { Client } = require("pg");
 
 function readCSV(filePath, dataFormater) {
   return new Promise((resolve, reject) => {
@@ -21,8 +20,6 @@ function countryFormater(data) {
   return data;
 }
 
-// DateRep,Day,Month,Year,Cases,Deaths,Countries and territories,GeoId
-// date: moment.utc(rows[j], "MM/DD/YYYY").format(),
 
 function casesFormatter(data) {
   return {
@@ -38,24 +35,3 @@ module.exports = {
   countryFormater,
   casesFormatter
 };
-
-const client = new Client();
-client.connect();
-
-// let countriesQuery =
-//   "INSERT INTO country(country, latitude, longitude,name) VALUES ($1,$2,$3,$4) ON CONFLICT DO NOTHING ;";
-
-// readCSV("../data/countries.csv", countryFormater).then(data =>
-//   data.forEach(item => {
-//     client.query(countriesQuery, [
-//       item.country,
-//       item.latitude,
-//       item.longitude,
-//       item.name
-//     ]);
-//   })
-// );
-
-// readCSV("../data/latest.csv", casesFormatter).then(data =>
-//   console.log(data.slice(0, 10))
-// );
