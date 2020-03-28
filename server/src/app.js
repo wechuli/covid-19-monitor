@@ -6,8 +6,6 @@ const express = require("express"),
   { StatusNotFound } = require("./helpers/httpErrors");
 
 //custom imports
-
-const userRoutes = require("./routes/user.routes");
 const dataRoutes = require("./routes/data.routes");
 
 const app = express();
@@ -21,8 +19,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 //Custom routes
-app.use("/api/users", userRoutes);
-
 app.use("/api/data", dataRoutes);
 
 console.log(process.env.PGDATABASE);

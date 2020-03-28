@@ -1,32 +1,28 @@
 // pg queries
 
-// insert into countries table
-
-let casesQuery =
-  "INSERT INTO cases(country, date, cases,deaths) VALUES ($1,$2,$3,$4) ON CONFLICT DO NOTHING ;";
-
+// insert data into the table
 let insertDataQuery =
   "INSERT INTO flatdata(country, date, cases,deaths,name,countryterritorycode,population) VALUES ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT DO NOTHING ;";
 
+// select every country affetced
 let getAllCountriesQuery = "SELECT DISTINCT name,country from flatdata;";
 
-let getCasesAndDeathsPerCountryQuery =
-  "SELECT co.country,co.name, ca.cases,ca.deaths,ca.date FROM cases ca FULL JOIN country co on ca.country = co.country WHERE ca.country = $1 ORDER BY  ca.date ASC ;";
-
+//quickstats
 let quickStatsQuery =
-  "SELECT sum(cases.cases) total_cases,sum(cases.deaths) total_deaths,(SELECT  count(DISTINCT country) from cases) affected_countries from cases;";
+  "SELECT sum(cases) total_cases,sum(deaths) total_deaths,(SELECT count(DISTINCT country) from flatdata) affected_countries from flatdata;";
 
-let totalCasesGroupedByCountryQuery =
-  "select country, sum(cases.cases) cases from cases GROUP BY country ORDER BY sum(cases.cases) DESC ;";
-let totalDeathsGroupedByCountryQuery =
-  "select country,sum(cases.deaths) deaths from cases GROUP BY country ORDER BY  sum(cases.deaths) DESC ;";
+// total cases and deaths grouped by country
+let totalDeathsAndCasesGroupedByCountryQuery =
+  "SELECT country,name,sum(deaths) deaths,sum(cases) cases from flatdata GROUP BY country, name ORDER BY sum(cases) desc,sum(deaths) desc;";
+
+// cases and deaths for specific country grouped by the date
+let getCasesAndDeathsPerCountryPerDateQuery =
+  "SELECT country,name,cases,deaths,date from flatdata WHERE country=$1 ORDER BY date asc";
 
 module.exports = {
-  casesQuery,
+  insertDataQuery,
   getAllCountriesQuery,
-  getCasesAndDeathsPerCountryQuery,
+  getCasesAndDeathsPerCountryPerDateQuery,
   quickStatsQuery,
-  totalCasesGroupedByCountryQuery,
-  totalDeathsGroupedByCountryQuery,
-  insertDataQuery
+  totalDeathsAndCasesGroupedByCountryQuery
 };

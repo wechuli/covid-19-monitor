@@ -10,19 +10,19 @@ const { fetchAndFormatData } = require("../helpers/covidDataFetcher");
 
 // queries
 const {
+  insertDataQuery,
   getAllCountriesQuery,
-  getCasesAndDeathsPerCountryQuery,
+  getCasesAndDeathsPerCountryPerDateQuery,
   quickStatsQuery,
-  totalCasesGroupedByCountryQuery,
-  totalDeathsGroupedByCountryQuery,
-  insertDataQuery
+  totalDeathsAndCasesGroupedByCountryQuery
 } = require("../helpers/dataQueries");
 
 const client = new Client();
 client.connect();
 
-module.exports = {
 
+
+module.exports = {
   // refresh daily data
   async refreshData(req, res) {
     try {
@@ -48,7 +48,6 @@ module.exports = {
     }
   },
 
-
   //  get all countries affected (name, country code)
   async getAllCountries(req, res) {
     try {
@@ -58,42 +57,35 @@ module.exports = {
       res.status(StatusInternalServerError).json({ error });
     }
   },
-
-  //  get all countries cases and deaths
-  async getAllCasesandDeathsByCountries(req, res) {
-    const { country } = req.params;
-    try {
-      const response = await client.query(getCasesAndDeathsPerCountryQuery, [
-        country
-      ]);
-      res.status(StatusOK).json({ data: response.rows, error: false });
-    } catch (error) {
-      res.status(StatusInternalServerError).json({ error });
-    }
-  },
-
-  async totalCasesGroupedByCountry(req, res) {
-    try {
-      const response = await client.query(totalCasesGroupedByCountryQuery);
-      res.status(StatusOK).json({ data: response.rows, error: false });
-    } catch (error) {
-      res.status(StatusInternalServerError).json({ error });
-    }
-  },
-
-  async totalDeathsGroupedByCountry(req, res) {
-    try {
-      const response = await client.query(totalDeathsGroupedByCountryQuery);
-      res.status(StatusOK).json({ data: response.rows, error: false });
-    } catch (error) {
-      res.status(StatusInternalServerError).json({ error });
-    }
-  },
-
   // quick stats about the number of countries affetced and total cases
   async quickStats(req, res) {
     try {
       const response = await client.query(quickStatsQuery);
+      res.status(StatusOK).json({ data: response.rows, error: false });
+    } catch (error) {
+      res.status(StatusInternalServerError).json({ error });
+    }
+  },
+
+  //  get per country Info
+  async getAllCasesandDeathsByCountry(req, res) {
+    const { country } = req.params;
+    try {
+      const response = await client.query(
+        getCasesAndDeathsPerCountryPerDateQuery,
+        [country]
+      );
+      res.status(StatusOK).json({ data: response.rows, error: false });
+    } catch (error) {
+      res.status(StatusInternalServerError).json({ error });
+    }
+  },
+  //  get per country Info
+  async getTotalCasesAndDeathsGroupedByCountry(req, res) {
+    try {
+      const response = await client.query(
+        totalDeathsAndCasesGroupedByCountryQuery
+      );
       res.status(StatusOK).json({ data: response.rows, error: false });
     } catch (error) {
       res.status(StatusInternalServerError).json({ error });
