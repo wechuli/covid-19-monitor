@@ -1,5 +1,10 @@
 const { Client } = require("pg");
 const fs = require("fs");
+const {
+  readCSV,
+  countryFormater,
+  casesFormatter
+} = require("../helpers/loadContries");
 
 const {
   StatusInternalServerError,
@@ -10,6 +15,8 @@ const { fetchAndFormatData } = require("../helpers/covidDataFetcher");
 
 // queries
 const {
+  countriesQuery,
+  casesQuery,
   getAllCountriesQuery,
   getCasesAndDeathsPerCountryQuery,
   quickStatsQuery,
@@ -22,7 +29,6 @@ const client = new Client();
 client.connect();
 
 module.exports = {
-
   // refresh daily data
   async refreshData(req, res) {
     try {
@@ -48,8 +54,34 @@ module.exports = {
     }
   },
 
+  //refresh countries data
+  async refreshCountryData(req, res) {
+    try {
+      const countriesData = await readCSV(
+        "server/src/data/countries.csv",
+        countryFormater
+      );
 
-  //  get all countries affected (name, country code)
+      countriesData.forEach(item => {
+        client
+          .query(countriesQuery, [
+            item.country,
+            item.latitude,
+            item.longitude,
+            item.name
+          ])
+          .then(() => {})
+          .catch(() => {
+            throw new Error("SQL insert error");
+          });
+      });
+      res.status(StatusOK).json({ message: "countries updated" });
+    } catch (error) {
+      res.status(StatusInternalServerError).json({ error });
+    }
+  },
+
+  //  get all countries affected
   async getAllCountries(req, res) {
     try {
       const response = await client.query(getAllCountriesQuery);

@@ -1,61 +1,44 @@
 const axios = require("axios");
 const moment = require("moment");
 
-const confirmedCasesGlobalURL =
-  "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv";
-const confirmedDeathsGlobalURL =
-  "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv";
-
-async function fetchData(url) {
+const dataURL =
+  "https://opendata.ecdc.europa.eu/covid19/casedistribution/json/";
+async function fetchRawJSONData(url) {
   try {
     const response = await axios.get(url);
-    return response.data;
+    return response.data.records;
   } catch (error) {
-    throw new Error(error.message);
+    throw new Error(error);
   }
 }
 
-function formatCSVData(responseString) {
-  const formattedData = [];
-  const dataToken = responseString.split(/\r?\n/);
-
-  //get the row headers
-  const rows = dataToken[0].split(",");
-
-  //loop through the data, ignoring the first row
-
-  for (let i = 1; i < dataToken.length; i++) {
-    const element = dataToken[i].split(",");
-
-    for (let j = 4; j < element.length; j++) {
-      let data;
-
-      let date = moment.utc(rows[j], "MM/DD/YYYY");
-
-      if (date.isValid()) {
-        data = {
-          province: element[0],
-          country: element[1],
-          latitude: element[2],
-          longitude: element[3],
-          date: moment.utc(rows[j], "MM/DD/YYYY").format(),
-          number: parseInt(element[j])
-        };
-
-        formattedData.push(data);
-      }
-    }
-  }
+function formatJSONData(dataArray) {
+  const formattedData = dataArray.map(record => {
+    return {
+      country: record["geoId"],
+      date: moment.utc(record["dateRep"], "DD/MM/YYYY").format(),
+      cases: parseInt(record["cases"]) ? parseInt(record["cases"]) : 0,
+      deaths: parseInt(record["deaths"]) ? parseInt(record["deaths"]) : 0,
+      name: record["countriesAndTerritories"],
+      countryterritorycode: record["countryterritoryCode"],
+      population: parseInt(record["popData2018"])
+        ? parseInt(record["popData2018"])
+        : 0
+    };
+  });
   return formattedData;
 }
 
-async function fetchAndFormatData(url) {
-  const responseString = await fetchData(url);
-  return formatCSVData(responseString);
+async function fetchAndFormatData() {
+  try {
+    const data = await fetchRawJSONData(dataURL);
+    const formattedData = formatJSONData(data);
+    return formattedData;
+  } catch (error) {
+    throw new Error(err);
+  }
 }
 
 module.exports = {
-  fetchAndFormatData,
-  confirmedCasesGlobalURL,
-  confirmedDeathsGlobalURL
+  fetchAndFormatData
 };

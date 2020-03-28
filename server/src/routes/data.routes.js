@@ -14,8 +14,9 @@ const {
 router.get("/refresh", refreshData);
 router.get("/allcountries", getAllCountries);
 router.get("/stats", quickStats);
+
+
 router.get("/cases/:country", getAllCasesandDeathsByCountries);
-router.get("/countryrefresh", refreshCountryData);
 
 router.get("/casesbycountry", totalCasesGroupedByCountry);
 router.get("/deathsbycountry", totalDeathsGroupedByCountry);
