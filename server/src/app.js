@@ -21,9 +21,8 @@ app.use(express.urlencoded({ extended: false }));
 //Custom routes
 app.use("/api/data", dataRoutes);
 
-console.log(process.env.PGDATABASE);
-//404 default route
 
+//404 default route
 app.use((req, res) => {
   res
     .status(StatusNotFound)

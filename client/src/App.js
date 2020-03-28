@@ -16,7 +16,7 @@ function App() {
   useEffect(() => {
     handleChange("KE");
     async function fetchData() {
-      const response = await axios.get("http://localhost:7493/api/data/stats");
+      const response = await axios.get("/api/data/stats");
       setData(response.data.data);
     }
     fetchData();
@@ -25,9 +25,7 @@ function App() {
   //fetch all countries
   useEffect(() => {
     async function fetchData() {
-      const response = await axios.get(
-        "http://localhost:7493/api/data/allcountries"
-      );
+      const response = await axios.get("/api/data/allcountries");
       setCountries(response.data);
     }
     fetchData();

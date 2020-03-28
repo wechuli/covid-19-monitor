@@ -55,7 +55,7 @@ const Cases = props => {
   useEffect(() => {
     async function fetchData() {
       const response = await axios.get(
-        `http://localhost:7493/api/data/cases/${country}`
+        `/api/data/cases/${country}`
       );
       console.log("i was here");
       let caseSeries = [];
