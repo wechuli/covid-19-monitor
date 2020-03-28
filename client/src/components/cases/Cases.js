@@ -17,6 +17,10 @@ const Cases = props => {
     chart: {
       zoomType: "x"
     },
+    xAxis:{
+      type:'datetime'
+    },
+    
     legend: {
       layout: "vertical",
       align: "right",
@@ -25,7 +29,7 @@ const Cases = props => {
     series: [
       {
         name: "cases",
-        type:"area",
+        // type:"area",
         data: caseData.series
       },
       {
@@ -62,8 +66,7 @@ const Cases = props => {
       let deathSeries = [];
 
       response.data.data.forEach(item => {
-        console.log(item);
-        const date = Date.parse(item["date"]);
+            const date = Date.parse(item["date"]);
         const cases = item["cases"];
         const deaths = item["deaths"];
 
@@ -80,8 +83,7 @@ const Cases = props => {
   return (
     <div>
       <HighchartsReact
-        highcharts={Highcharts}
-        constructorType={"stockChart"}
+        highcharts={Highcharts}        
         options={options}
       />
     </div>

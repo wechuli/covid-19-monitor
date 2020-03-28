@@ -5,8 +5,10 @@
   "author": "Wechuli",
   "license": "MIT",
   "scripts": {
+    "client":"cd client && yarn start",
+    "server":"env-cmd -f ./server/config/dev.env nodemon server/src/index.js",
     "start": "node server/src/index.js",
-    "dev": "env-cmd -f ./server/config/dev.env nodemon server/src/index.js",
+    "dev": " concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
     "test": "env-cmd -f ./server/config/test.env jest --watch --runInBand"
   },
   "jest": {
