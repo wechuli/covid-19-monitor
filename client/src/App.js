@@ -7,12 +7,13 @@ import Cases from "./components/cases/Cases";
 function App() {
   const [data, setData] = useState([]);
   const [countries, setCountries] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState();
+  const [selectedCountry, setSelectedCountry] = useState("KE");
+  const [countryName, setCountryName] = useState("Kenya");
   const { Option } = Select;
 
   const { Title, Text } = Typography;
 
-  //fetch starts
+  //fetch stats
   useEffect(() => {
     handleChange("KE");
     async function fetchData() {
@@ -26,13 +27,17 @@ function App() {
   useEffect(() => {
     async function fetchData() {
       const response = await axios.get("/api/data/allcountries");
-      setCountries(response.data);
+      setCountries(response.data.data);
     }
     fetchData();
   }, []);
 
   const handleChange = value => {
     setSelectedCountry(value);
+    let country = countries.find(country => country.country === value);
+    if (country) {
+      setCountryName(country.name);
+    }
   };
   return (
     <>
@@ -67,12 +72,12 @@ function App() {
               tokenSeparators={[","]}
               defaultValue={["Kenya"]}
             >
-              {countries.data.map(item => (
+              {countries.map(item => (
                 <Option key={item.country}>{item.name}</Option>
               ))}
             </Select>
 
-            <Cases country={selectedCountry} />
+            <Cases country={selectedCountry} name={countryName} />
           </div>
         )}
       </div>

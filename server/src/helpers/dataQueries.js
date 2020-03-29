@@ -5,7 +5,7 @@ let insertDataQuery =
   "INSERT INTO flatdata(country, date, cases,deaths,name,countryterritorycode,population) VALUES ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT DO NOTHING ;";
 
 // select every country affetced
-let getAllCountriesQuery = "SELECT DISTINCT name,country from flatdata;";
+let getAllCountriesQuery = "SELECT DISTINCT name,country from flatdata ORDER BY name ASC;";
 
 //quickstats
 let quickStatsQuery =
