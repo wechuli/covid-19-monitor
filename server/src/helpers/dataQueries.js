@@ -19,10 +19,15 @@ let totalDeathsAndCasesGroupedByCountryQuery =
 let getCasesAndDeathsPerCountryPerDateQuery =
   "SELECT country,name,cases,deaths,date from flatdata WHERE country=$1 ORDER BY date asc";
 
+// get unique dates from db
+
+let getUniqueDatesQuery = "SELECT DISTINCT date from flatdata;";
+
 module.exports = {
   insertDataQuery,
   getAllCountriesQuery,
   getCasesAndDeathsPerCountryPerDateQuery,
   quickStatsQuery,
-  totalDeathsAndCasesGroupedByCountryQuery
+  totalDeathsAndCasesGroupedByCountryQuery,
+  getUniqueDatesQuery
 };

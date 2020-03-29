@@ -6,10 +6,11 @@ const {
   getAllCountries,
   quickStats,
   getAllCasesandDeathsByCountry,
-  getTotalCasesAndDeathsGroupedByCountry
+  getTotalCasesAndDeathsGroupedByCountry,
+  refreshDataEfficient
 } = require("../controllers/main.controllers");
 
-router.get("/refresh", refreshData);
+router.get("/refresh", refreshDataEfficient);
 router.get("/allcountries", getAllCountries);
 router.get("/stats", quickStats);
 router.get("/cases/:country", getAllCasesandDeathsByCountry);
