@@ -9,7 +9,7 @@
     "antd": "^4.0.4",
     "axios": "^0.19.2",
     "formik": "^2.1.4",
-    "highcharts": "^8.0.4",
+    "highcharts": "^9.0.0",
     "highcharts-react-official": "^3.0.0",
     "node-sass": "^4.13.1",
     "react": "^16.13.1",
